@@ -1,4 +1,13 @@
 
+const scrollToElement = (node, yOffset = 0) => {
+    if (!node) {
+        return
+    }
+    const el = node.nodeName === '#text' ? node.parentElement : node
+    el.scrollIntoView()
+    scrollBy(0, -60 + yOffset) // accommodate for page header height
+}
+
 const fadeOut = (el, duration) => {
     return el.animate(
         [
@@ -64,6 +73,8 @@ const highlightText = (terms, selector) => {
 
     const matchesHighlight = new Highlight(...ranges)
     CSS.highlights.set(selector, matchesHighlight)
+
+    return termsTextNodes
 }
 
 const reviewProfile = async () => {
@@ -75,15 +86,15 @@ const reviewProfile = async () => {
 
     if (nayMatch) {
         popup('❌')
-        highlightText(rules.nay, 'nay-matches')
+        const matchingNodes = highlightText(rules.nay, 'nay-matches')
+        scrollToElement(matchingNodes[0], -10)
     } else if (yayMatch) {
         popup('✅')
-        highlightText(rules.yay, 'yay-matches')
+        const matchingNodes = highlightText(rules.yay, 'yay-matches')
+        scrollToElement(matchingNodes[0], -10)
     } else {
         popup('❔')
     }
-
-    detailsEl.scrollIntoView()
 }
 
 const likeProfile = () => {
@@ -115,7 +126,7 @@ const bindHotkeys = () => {
             return;
         }
 
-        document.querySelector('.desktop-dt-wrapper')?.scrollIntoView()
+        scrollToElement(document.querySelector('.desktop-dt-wrapper'))
 
         switch (ev.code) {
             case 'Numpad8':
