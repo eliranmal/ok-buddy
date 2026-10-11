@@ -18,10 +18,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     chrome.storage.local.get({
       yayRules: '',
       nayRules: '',
-    }).then(({ yayRules, nayRules }) => {
+      mehRules: '',
+    }).then(({ yayRules, nayRules, mehRules }) => {
       sendResponse({
         yay: linesAsArray(yayRules),
         nay: linesAsArray(nayRules),
+        meh: linesAsArray(mehRules),
       });
     })
   }

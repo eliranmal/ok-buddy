@@ -68,13 +68,20 @@ const renderAltLog = () => {
     return logEl;
 }
 
-const highlightText = (terms, key) => {
+const clearHighlightedText = () => {
     if (!CSS.highlights) {
         console.log('css highlights not supported!')
         return
     }
 
     CSS.highlights.clear()
+}
+
+const highlightText = (terms, key) => {
+    if (!CSS.highlights) {
+        console.log('css highlights not supported!')
+        return
+    }
 
     const domWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, node => (
         terms.some(t => node.data.includes(t)) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP
@@ -105,15 +112,20 @@ const reviewProfile = async () => {
     const rules = await chrome.runtime.sendMessage({ type: 'getRules' })
     const yayMatch = rules.yay.some(yRule => contentEl.textContent.includes(yRule))
     const nayMatch = rules.nay.some(nRule => contentEl.textContent.includes(nRule))
+    const mehMatch = rules.meh.some(nRule => contentEl.textContent.includes(nRule))
 
+    clearHighlightedText()
     termIndex = 0
-
     termNodes = []
+
+    if (yayMatch) {
+        termNodes.push(...highlightText(rules.yay, 'yay-matches'))
+    }
     if (nayMatch) {
         termNodes.push(...highlightText(rules.nay, 'nay-matches'))
     }
-    if (yayMatch) {
-        termNodes.push(...highlightText(rules.yay, 'yay-matches'))
+    if (mehMatch) {
+        termNodes.push(...highlightText(rules.meh, 'meh-matches'))
     }
 
     if (yayMatch === nayMatch) {

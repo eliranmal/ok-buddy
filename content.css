@@ -11,6 +11,11 @@
     background-color: #dd0066;
 }
 
+::highlight(meh-matches) {
+    color: #333333;
+    background-color: #ccc666;
+}
+
 
 /* components */
 
