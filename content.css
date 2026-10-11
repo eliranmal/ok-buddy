@@ -22,8 +22,8 @@
 .ok-buddy-log-text,
 .ok-buddy-log-box {
     position: fixed;
-    right: 2rem;
-    bottom: 2rem;
+    left: 2rem;
+    top: calc(50vh - 2.5rem);
     width: 5rem;
     height: 5rem;
     border-radius: 2.5rem;
