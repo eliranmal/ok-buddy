@@ -23,20 +23,33 @@ const fadeOut = (el, duration) => {
 }
 
 let popupAnimation
+let altPopupAnimation
 
-const popup = (message, timeoutSeconds = 4) => {
+const popup = (message, durationSeconds = 4) => {
     popupAnimation?.cancel()
 
     const logEl = document.getElementById('ok-buddy-log')
     logEl.textContent = message
 
-    popupAnimation = fadeOut(logEl, timeoutSeconds * 1000)
+    popupAnimation = fadeOut(logEl, durationSeconds * 1000)
     popupAnimation.onfinish = () => {
         logEl.textContent = ''
     }
 }
 
-const createLogBox = () => {
+const popupAlt = (message, durationSeconds = 4) => {
+    altPopupAnimation?.cancel()
+
+    const logEl = document.getElementById('ok-buddy-log-alt')
+    logEl.textContent = message
+
+    altPopupAnimation = fadeOut(logEl, durationSeconds * 1000)
+    altPopupAnimation.onfinish = () => {
+        logEl.textContent = ''
+    }
+}
+
+const renderLog = () => {
     const logEl = document.createElement('div')
     logEl.id = 'ok-buddy-log'
     logEl.classList.add('ok-buddy-log-text')
@@ -44,6 +57,13 @@ const createLogBox = () => {
     logBoxEl.classList.add('ok-buddy-log-box')
     logBoxEl.appendChild(logEl)
     return logBoxEl;
+}
+
+const renderAltLog = () => {
+    const logEl = document.createElement('div')
+    logEl.id = 'ok-buddy-log-alt'
+    logEl.classList.add('ok-buddy-log-text')
+    return logEl;
 }
 
 const highlightText = (terms, selector) => {
@@ -77,6 +97,9 @@ const highlightText = (terms, selector) => {
     return termsTextNodes
 }
 
+
+let matchingNodes
+
 const reviewProfile = async () => {
     const detailsEl = document.querySelector('.matchprofile-details')
 
@@ -86,12 +109,10 @@ const reviewProfile = async () => {
 
     if (nayMatch) {
         popup('❌')
-        const matchingNodes = highlightText(rules.nay, 'nay-matches')
-        scrollToElement(matchingNodes[0], -10)
+        matchingNodes = highlightText(rules.nay, 'nay-matches')
     } else if (yayMatch) {
         popup('✅')
-        const matchingNodes = highlightText(rules.yay, 'yay-matches')
-        scrollToElement(matchingNodes[0], -10)
+        matchingNodes = highlightText(rules.yay, 'yay-matches')
     } else {
         popup('❔')
     }
@@ -102,7 +123,8 @@ const likeProfile = () => {
     const discoverPageSelector = '.dt-action-buttons-button.like'
     const likeButtonEl = document.querySelector([profilePageSelector, discoverPageSelector].join(','))
     likeButtonEl.click()
-    popup('👍', 1)
+    popupAlt('👍', 1)
+    setTimeout(reviewProfile, 50)
 }
 
 const passProfile = () => {
@@ -110,14 +132,15 @@ const passProfile = () => {
     const discoverPageSelector = '.dt-action-buttons-button.pass'
     const passButtonEl = document.querySelector([profilePageSelector, discoverPageSelector].join(','))
     passButtonEl.click()
-    popup('👎', 1)
+    popupAlt('👎', 1)
+    setTimeout(reviewProfile, 50)
 }
 
 const messageProfile = () => {
     const profilePageSelector = '.profile-pill-buttons-button.message-pill-button'
     const messageButtonEl = document.querySelector(profilePageSelector)
     messageButtonEl?.click()
-    popup('✏️', 1)
+    popupAlt('✏️', 1)
 }
 
 const bindHotkeys = () => {
@@ -139,10 +162,13 @@ const bindHotkeys = () => {
                 passProfile()
                 break;
             case 'Numpad5':
-                messageProfile()
+                scrollToElement(matchingNodes[0], -10)
                 break;
             case 'Numpad2':
                 location.reload()
+                break;
+            case 'Numpad0':
+                messageProfile()
                 break;
             default:
                 break;
@@ -151,7 +177,8 @@ const bindHotkeys = () => {
 }
 
 const render = () => {
-    document.body.appendChild(createLogBox())
+    document.body.appendChild(renderLog())
+    document.body.appendChild(renderAltLog())
 }
 
 const main = () => {

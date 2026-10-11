@@ -24,8 +24,11 @@
     border-radius: 2.5rem;
 }
 
+#ok-buddy-log-alt {
+    bottom: 7rem;
+}
+
 .ok-buddy-log-text {
-    --ok-buddy-log-transition-duration: 3s;
     z-index: 99999;
     line-height: 5rem;
     text-align: center;
