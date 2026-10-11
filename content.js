@@ -26,7 +26,7 @@ const fadeOut = (el, duration) => {
         });
 }
 
-const popup = (message, durationSeconds = 6) => {
+const popup = (message, durationSeconds = 10) => {
     popupAnimation?.cancel()
 
     const logEl = document.getElementById('ok-buddy-log')
