@@ -1,20 +1,46 @@
 
 html {
-  padding: 0 10px;
+  font-size: 20px;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 1.25rem 2rem 1rem;
+}
+
+button:focus,
+textarea:focus {
+  outline: none;
 }
 
 label {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  font-weight: bold;
+  background-color: lightgray;
 }
 
-label input {
-  margin-right: 10px;
+label.yay {
+  color: #00aa66;
 }
+
+label.nay {
+  color: #dd0066;
+}
+
+label.meh {
+  color: #fcfc8a;
+}
+
 
 textarea {
   resize: none;
-  width: calc(100% - 35px);
+  width: calc(100% - 8rem);
   border: 2px solid black;
   background: rgb(34, 34, 34);
   padding: 15px;
@@ -23,9 +49,23 @@ textarea {
 
 textarea:focus {
   border: 2px solid grey;
-  outline: none;
 }
 
 button {
-  margin: 20px 0;
+  padding: .5rem;
+  font-size: 2rem;
+  line-height: 1;
+  background-color: #fff;
+  cursor: pointer;
+  border: none;
+}
+
+button:active {
+  transform: translate(0, 1px) scale(98%);
+}
+
+#save-button {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
 }

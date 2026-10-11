@@ -14,7 +14,6 @@ async function updateUi() {
     nayRules: '',
     mehRules: '',
   });
-  console.log(nayRules);
 
   // Update UI with current values.
   FORM.elements[YAY_RULES_TEXTAREA_NAME].value = yayRules;
