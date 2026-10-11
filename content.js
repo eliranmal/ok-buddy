@@ -1,4 +1,9 @@
 
+let popupAnimation
+let altPopupAnimation
+let termNodes
+let termIndex = 0
+
 const scrollToElement = (node, yOffset = 0) => {
     if (!node) {
         return
@@ -21,9 +26,6 @@ const fadeOut = (el, duration) => {
             timingFunction: 'ease-in',
         });
 }
-
-let popupAnimation
-let altPopupAnimation
 
 const popup = (message, durationSeconds = 6) => {
     popupAnimation?.cancel()
@@ -97,9 +99,6 @@ const highlightText = (terms, key) => {
     return termsTextNodes
 }
 
-
-let matchingNodes
-
 const reviewProfile = async () => {
     const contentEl = document.querySelector('.desktop-dt-content')
 
@@ -107,12 +106,14 @@ const reviewProfile = async () => {
     const yayMatch = rules.yay.some(yRule => contentEl.textContent.includes(yRule))
     const nayMatch = rules.nay.some(nRule => contentEl.textContent.includes(nRule))
 
-    matchingNodes = []
+    termIndex = 0
+
+    termNodes = []
     if (nayMatch) {
-        matchingNodes.push(...highlightText(rules.nay, 'nay-matches'))
+        termNodes.push(...highlightText(rules.nay, 'nay-matches'))
     }
     if (yayMatch) {
-        matchingNodes.push(...highlightText(rules.yay, 'yay-matches'))
+        termNodes.push(...highlightText(rules.yay, 'yay-matches'))
     }
 
     if (yayMatch === nayMatch) {
@@ -124,13 +125,21 @@ const reviewProfile = async () => {
     }
 }
 
+const cycleMatchingTerms = () => {
+    scrollToElement(termNodes[termIndex], -10)
+    termIndex++
+    if (termIndex >= termNodes.length) {
+        termIndex = 0
+    }
+}
+
 const likeProfile = () => {
     const profilePageSelector = '#like-button'
     const discoverPageSelector = '.dt-action-buttons-button.like'
     const likeButtonEl = document.querySelector([profilePageSelector, discoverPageSelector].join(','))
     likeButtonEl.click()
     popupAlt('👍', 1)
-    setTimeout(reviewProfile, 50)
+    setTimeout(reviewProfile, 20)
 }
 
 const passProfile = () => {
@@ -139,7 +148,7 @@ const passProfile = () => {
     const passButtonEl = document.querySelector([profilePageSelector, discoverPageSelector].join(','))
     passButtonEl.click()
     popupAlt('👎', 1)
-    setTimeout(reviewProfile, 50)
+    setTimeout(reviewProfile, 20)
 }
 
 const messageProfile = () => {
@@ -168,7 +177,7 @@ const bindHotkeys = () => {
                 passProfile()
                 break;
             case 'Numpad5':
-                scrollToElement(matchingNodes[0], -10)
+                cycleMatchingTerms()
                 break;
             case 'Numpad2':
                 location.reload()
