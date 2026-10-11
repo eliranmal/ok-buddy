@@ -1,6 +1,5 @@
 
 let popupAnimation
-let altPopupAnimation
 let termNodes
 let termIndex = 0
 
@@ -39,18 +38,6 @@ const popup = (message, durationSeconds = 6) => {
     }
 }
 
-const popupAlt = (message, durationSeconds = 4) => {
-    altPopupAnimation?.cancel()
-
-    const logEl = document.getElementById('ok-buddy-log-alt')
-    logEl.textContent = message
-
-    altPopupAnimation = fadeOut(logEl, durationSeconds * 1000)
-    altPopupAnimation.onfinish = () => {
-        logEl.textContent = ''
-    }
-}
-
 const renderLog = () => {
     const logEl = document.createElement('div')
     logEl.id = 'ok-buddy-log'
@@ -59,13 +46,6 @@ const renderLog = () => {
     logBoxEl.classList.add('ok-buddy-log-box')
     logBoxEl.appendChild(logEl)
     return logBoxEl;
-}
-
-const renderAltLog = () => {
-    const logEl = document.createElement('div')
-    logEl.id = 'ok-buddy-log-alt'
-    logEl.classList.add('ok-buddy-log-text')
-    return logEl;
 }
 
 const clearHighlightedText = () => {
@@ -150,7 +130,6 @@ const likeProfile = () => {
     const discoverPageSelector = '.dt-action-buttons-button.like'
     const likeButtonEl = document.querySelector([profilePageSelector, discoverPageSelector].join(','))
     likeButtonEl.click()
-    popupAlt('👍', 1)
     setTimeout(reviewProfile, 20)
 }
 
@@ -159,7 +138,6 @@ const passProfile = () => {
     const discoverPageSelector = '.dt-action-buttons-button.pass'
     const passButtonEl = document.querySelector([profilePageSelector, discoverPageSelector].join(','))
     passButtonEl.click()
-    popupAlt('👎', 1)
     setTimeout(reviewProfile, 20)
 }
 
@@ -167,7 +145,6 @@ const messageProfile = () => {
     const profilePageSelector = '.profile-pill-buttons-button.message-pill-button'
     const messageButtonEl = document.querySelector(profilePageSelector)
     messageButtonEl?.click()
-    popupAlt('✏️', 1)
 }
 
 const bindHotkeys = () => {
@@ -205,7 +182,6 @@ const bindHotkeys = () => {
 
 const render = () => {
     document.body.appendChild(renderLog())
-    document.body.appendChild(renderAltLog())
 }
 
 const main = () => {
