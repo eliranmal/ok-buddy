@@ -1,6 +1,6 @@
 
 let popupAnimation
-let termNodes
+let termMatchNodes
 let termIndex = 0
 
 const scrollToElement = (node, yOffset = 0) => {
@@ -26,15 +26,17 @@ const fadeOut = (el, duration) => {
         });
 }
 
-const popup = (message, durationSeconds = 10) => {
+const popup = (message, durationSeconds) => {
     popupAnimation?.cancel()
 
     const logEl = document.getElementById('ok-buddy-log')
     logEl.textContent = message
 
-    popupAnimation = fadeOut(logEl, durationSeconds * 1000)
-    popupAnimation.onfinish = () => {
-        logEl.textContent = ''
+    if (Number.isInteger(durationSeconds)) {
+        popupAnimation = fadeOut(logEl, durationSeconds * 1000)
+        popupAnimation.onfinish = () => {
+            logEl.textContent = ''
+        }
     }
 }
 
@@ -87,7 +89,9 @@ const highlightText = (terms, key) => {
 }
 
 const reviewProfile = async () => {
-    const contentEl = document.querySelector('.desktop-dt-content')
+    const profilePageSelector = '#profile'
+    const discoverPageSelector = '.desktop-dt-content'
+    const contentEl = document.querySelector([profilePageSelector, discoverPageSelector].join(','))
 
     const rules = await chrome.runtime.sendMessage({ type: 'getRules' })
     const yayMatch = rules.yay.some(yRule => contentEl.textContent.includes(yRule))
@@ -96,34 +100,34 @@ const reviewProfile = async () => {
 
     clearHighlightedText()
     termIndex = 0
-    termNodes = []
+    termMatchNodes = []
 
     if (yayMatch) {
-        termNodes.push(...highlightText(rules.yay, 'yay-matches'))
+        termMatchNodes.push(...highlightText(rules.yay, 'yay-matches'))
     }
     if (nayMatch) {
-        termNodes.push(...highlightText(rules.nay, 'nay-matches'))
+        termMatchNodes.push(...highlightText(rules.nay, 'nay-matches'))
     }
     if (mehMatch) {
-        termNodes.push(...highlightText(rules.meh, 'meh-matches'))
+        termMatchNodes.push(...highlightText(rules.meh, 'meh-matches'))
     }
 
-    if (yayMatch === nayMatch) {
-        popup('❔')
-    } else if (yayMatch) {
-        popup('✅')
-    } else if (nayMatch) {
-        popup('❌')
-    }
+    const message = !yayMatch && !nayMatch && !mehMatch ? ' \n❔' : [
+        yayMatch ? '✅' : ' ',
+        mehMatch ? '🔔' : ' ',
+        nayMatch ? '❌' : ' ',
+    ].join('\n')
+
+    popup(message)
 }
 
 const cycleMatchingTerms = () => {
-    if (!termNodes || !termNodes.length) {
+    if (!termMatchNodes || !termMatchNodes.length) {
         return
     }
-    scrollToElement(termNodes[termIndex], -10)
+    scrollToElement(termMatchNodes[termIndex], -10)
     termIndex++
-    if (termIndex >= termNodes.length) {
+    if (termIndex >= termMatchNodes.length) {
         termIndex = 0
     }
 }

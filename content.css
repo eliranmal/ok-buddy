@@ -23,20 +23,21 @@
 .ok-buddy-log-box {
     position: fixed;
     left: 2rem;
-    top: calc(50vh - 2.5rem);
-    width: 5rem;
-    height: 5rem;
+    bottom: 2rem;
+    min-height: 11rem;
     border-radius: 2.5rem;
 }
 
 .ok-buddy-log-text {
     z-index: 99999;
-    line-height: 5rem;
-    text-align: center;
+    width: 0;
+    padding: 1rem 1.4rem;
+    line-height: 3rem;
     font-size: 2em;
 }
 
 .ok-buddy-log-box {
     z-index: 99998;
+    width: 5rem;
     background-color: #333;
 }
