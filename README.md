@@ -27,5 +27,5 @@ a browser extension to streamline the user-experience on okcupid.
 
 <dl>
     <dt>rules</dt>
-    <dd>has two fields, 'yes, please' and 'no, thank you'.  enter the phrases from user profiles you want to allow or deny, respectively (one phrase per line).</dd>
+    <dd>in each textarea, enter the phrases from user profiles you want to highlight (one phrase per line).</dd>
 </dl>

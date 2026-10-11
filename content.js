@@ -25,7 +25,7 @@ const fadeOut = (el, duration) => {
 let popupAnimation
 let altPopupAnimation
 
-const popup = (message, durationSeconds = 4) => {
+const popup = (message, durationSeconds = 6) => {
     popupAnimation?.cancel()
 
     const logEl = document.getElementById('ok-buddy-log')
@@ -66,7 +66,7 @@ const renderAltLog = () => {
     return logEl;
 }
 
-const highlightText = (terms, selector) => {
+const highlightText = (terms, key) => {
     if (!CSS.highlights) {
         console.log('css highlights not supported!')
         return
@@ -92,7 +92,7 @@ const highlightText = (terms, selector) => {
     })
 
     const matchesHighlight = new Highlight(...ranges)
-    CSS.highlights.set(selector, matchesHighlight)
+    CSS.highlights.set(key, matchesHighlight)
 
     return termsTextNodes
 }
@@ -101,20 +101,26 @@ const highlightText = (terms, selector) => {
 let matchingNodes
 
 const reviewProfile = async () => {
-    const detailsEl = document.querySelector('.matchprofile-details')
+    const contentEl = document.querySelector('.desktop-dt-content')
 
     const rules = await chrome.runtime.sendMessage({ type: 'getRules' })
-    const yayMatch = rules.yay.some(yRule => detailsEl.textContent.includes(yRule))
-    const nayMatch = rules.nay.some(nRule => detailsEl.textContent.includes(nRule))
+    const yayMatch = rules.yay.some(yRule => contentEl.textContent.includes(yRule))
+    const nayMatch = rules.nay.some(nRule => contentEl.textContent.includes(nRule))
 
+    matchingNodes = []
     if (nayMatch) {
-        popup('❌')
-        matchingNodes = highlightText(rules.nay, 'nay-matches')
+        matchingNodes.push(...highlightText(rules.nay, 'nay-matches'))
+    }
+    if (yayMatch) {
+        matchingNodes.push(...highlightText(rules.yay, 'yay-matches'))
+    }
+
+    if (yayMatch === nayMatch) {
+        popup('❔')
     } else if (yayMatch) {
         popup('✅')
-        matchingNodes = highlightText(rules.yay, 'yay-matches')
-    } else {
-        popup('❔')
+    } else if (nayMatch) {
+        popup('❌')
     }
 }
 
