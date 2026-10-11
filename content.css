@@ -22,8 +22,8 @@
 .ok-buddy-log-text,
 .ok-buddy-log-box {
     position: fixed;
-    left: 2rem;
-    bottom: 2rem;
+    left: 1.5rem;
+    bottom: 1.5rem;
     min-height: 11rem;
     border-radius: 2.5rem;
 }
@@ -39,5 +39,5 @@
 .ok-buddy-log-box {
     z-index: 99998;
     width: 5rem;
-    background-color: #333;
+    background-color: #555;
 }
