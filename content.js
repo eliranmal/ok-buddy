@@ -118,6 +118,9 @@ const reviewProfile = async () => {
 }
 
 const cycleMatchingTerms = () => {
+    if (!termNodes || !termNodes.length) {
+        return
+    }
     scrollToElement(termNodes[termIndex], -10)
     termIndex++
     if (termIndex >= termNodes.length) {
