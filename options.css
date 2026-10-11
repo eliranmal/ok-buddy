@@ -3,11 +3,6 @@ html {
   padding: 0 10px;
 }
 
-#warning {
-  display: none;
-  margin-bottom: 30px;
-}
-
 label {
   display: flex;
   align-items: center;
