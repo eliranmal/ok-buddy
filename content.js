@@ -5,7 +5,7 @@ let termMatchNodes
 let termIndex = 0
 
 
-const homePageSelectors = {
+const defaultPageSelectors = {
     wrapper: '.desktop-dt-wrapper',
     profile: '.desktop-dt-content',
     details: '.dt-section',
@@ -23,8 +23,8 @@ const profilePageSelectors = {
 }
 
 const selectorsByPage = {
-    'home': homePageSelectors,
-    'discover': homePageSelectors,
+    'home': defaultPageSelectors,
+    'discover': defaultPageSelectors,
     'profile': profilePageSelectors,
 }
 
@@ -44,6 +44,11 @@ const scrollToElement = (node, yOffset = 0) => {
     scrollBy(0, -60 + yOffset) // accommodate for page header height
 }
 
+const scrollToWrapper = () => {
+    const wrapperEl = document.querySelector(getSelector('wrapper'))
+    scrollToElement(wrapperEl)
+}
+
 const fadeOut = (el, duration) => {
     return el.animate(
         [
@@ -56,6 +61,16 @@ const fadeOut = (el, duration) => {
             iterations: 1,
             timingFunction: 'ease-in',
         });
+}
+
+const renderLog = () => {
+    const logEl = document.createElement('div')
+    logEl.id = 'ok-buddy-log'
+    logEl.classList.add('ok-buddy-log-text')
+    const logBoxEl = document.createElement('div')
+    logBoxEl.classList.add('ok-buddy-log-box')
+    logBoxEl.appendChild(logEl)
+    return logBoxEl;
 }
 
 const popup = (message, durationSeconds) => {
@@ -77,16 +92,6 @@ const popdown = () => {
 
     const logEl = document.getElementById('ok-buddy-log')
     logEl.textContent = ''
-}
-
-const renderLog = () => {
-    const logEl = document.createElement('div')
-    logEl.id = 'ok-buddy-log'
-    logEl.classList.add('ok-buddy-log-text')
-    const logBoxEl = document.createElement('div')
-    logBoxEl.classList.add('ok-buddy-log-box')
-    logBoxEl.appendChild(logEl)
-    return logBoxEl;
 }
 
 const clearHighlightedText = () => {
@@ -128,14 +133,11 @@ const highlightText = (terms, key) => {
 }
 
 const reviewProfile = () => {
-    const wrapperEl = document.querySelector(getSelector('wrapper'))
     const contentEl = document.querySelector(getSelector('profile'))
 
     const yayMatch = rules.yay.some(yRule => contentEl.textContent.includes(yRule))
     const nayMatch = rules.nay.some(nRule => contentEl.textContent.includes(nRule))
     const mehMatch = rules.meh.some(nRule => contentEl.textContent.includes(nRule))
-
-    scrollToElement(wrapperEl)
 
     clearHighlightedText()
     termIndex = 0
@@ -195,12 +197,15 @@ const bindHotkeys = () => {
 
         switch (ev.code) {
             case 'Numpad8':
+                scrollToWrapper()
                 reviewProfile()
                 break;
             case 'Numpad6':
+                scrollToWrapper()
                 likeProfile()
                 break;
             case 'Numpad4':
+                scrollToWrapper()
                 passProfile()
                 break;
             case 'Numpad5':
@@ -220,21 +225,19 @@ const bindHotkeys = () => {
 
 const bindDomObserver = () => {
     const domMutationObserver = new MutationObserver((mutationsList) => {
-        for (const mutation of mutationsList) {
-            if (mutation.type !== 'childList' || !mutation.addedNodes.length) {
-                continue
-            }
-            mutation.addedNodes.forEach(node => {
-                if (node.nodeType !== Node.ELEMENT_NODE) {
-                    return
-                }
-                const wrapperElAdded = node.matches(getSelector('wrapper'))
-                const nestedDetailsElFound = node.querySelector(getSelector('details'))
-                const detailsElAdded = node.matches(getSelector('details'))
-                if (wrapperElAdded && nestedDetailsElFound || detailsElAdded) {
-                    reviewProfile()
-                }
-            })
+        const profileContentsAdded = mutationsList
+            .filter(mutation => (
+                mutation.type === 'childList' && mutation.addedNodes.length)
+            )
+            .some(mutation => (
+                Array.from(mutation.addedNodes).some(node => (
+                    // node is an element AND 'profile' container is the node's ancestor
+                    node.nodeType === Node.ELEMENT_NODE && node.closest(getSelector('profile'))
+                ))
+            ))
+
+        if (profileContentsAdded) {
+            reviewProfile()
         }
     })
 
