@@ -1,7 +1,39 @@
 
+let rules
 let popupAnimation
 let termMatchNodes
 let termIndex = 0
+
+
+const homePageSelectors = {
+    wrapper: '.desktop-dt-wrapper',
+    profile: '.desktop-dt-content',
+    details: '.dt-section',
+    likeButton: '.dt-action-buttons-button.like',
+    passButton: '.dt-action-buttons-button.pass',
+}
+
+const profilePageSelectors = {
+    wrapper: '#profile',
+    profile: '#profile',
+    details: '.quickmatch-profiledetails.matchprofile-details',
+    likeButton: '#like-button',
+    passButton: '#pass-button',
+    messageButton: '.profile-pill-buttons-button.message-pill-button',
+}
+
+const selectorsByPage = {
+    'home': homePageSelectors,
+    'discover': homePageSelectors,
+    'profile': profilePageSelectors,
+}
+
+
+const getSelector = (key) => {
+    const pageBasename = location.pathname.split('/').filter(Boolean).shift()
+    const pageSelectors = selectorsByPage[pageBasename]
+    return pageSelectors?.[key]
+}
 
 const scrollToElement = (node, yOffset = 0) => {
     if (!node) {
@@ -38,6 +70,13 @@ const popup = (message, durationSeconds) => {
             logEl.textContent = ''
         }
     }
+}
+
+const popdown = () => {
+    popupAnimation?.cancel()
+
+    const logEl = document.getElementById('ok-buddy-log')
+    logEl.textContent = ''
 }
 
 const renderLog = () => {
@@ -88,12 +127,9 @@ const highlightText = (terms, key) => {
     return termsTextNodes
 }
 
-const reviewProfile = async () => {
-    const profilePageSelector = '#profile'
-    const discoverPageSelector = '.desktop-dt-content'
-    const contentEl = document.querySelector([profilePageSelector, discoverPageSelector].join(','))
+const reviewProfile = () => {
+    const contentEl = document.querySelector(getSelector('profile'))
 
-    const rules = await chrome.runtime.sendMessage({ type: 'getRules' })
     const yayMatch = rules.yay.some(yRule => contentEl.textContent.includes(yRule))
     const nayMatch = rules.nay.some(nRule => contentEl.textContent.includes(nRule))
     const mehMatch = rules.meh.some(nRule => contentEl.textContent.includes(nRule))
@@ -133,24 +169,18 @@ const cycleMatchingTerms = () => {
 }
 
 const likeProfile = () => {
-    const profilePageSelector = '#like-button'
-    const discoverPageSelector = '.dt-action-buttons-button.like'
-    const likeButtonEl = document.querySelector([profilePageSelector, discoverPageSelector].join(','))
+    const likeButtonEl = document.querySelector(getSelector('likeButton'))
     likeButtonEl.click()
-    setTimeout(reviewProfile, 20)
+    popdown()
 }
-
 const passProfile = () => {
-    const profilePageSelector = '#pass-button'
-    const discoverPageSelector = '.dt-action-buttons-button.pass'
-    const passButtonEl = document.querySelector([profilePageSelector, discoverPageSelector].join(','))
+    const passButtonEl = document.querySelector(getSelector('passButton'))
     passButtonEl.click()
-    setTimeout(reviewProfile, 20)
+    popdown()
 }
 
 const messageProfile = () => {
-    const profilePageSelector = '.profile-pill-buttons-button.message-pill-button'
-    const messageButtonEl = document.querySelector(profilePageSelector)
+    const messageButtonEl = document.querySelector(getSelector('messageButton'))
     messageButtonEl?.click()
 }
 
@@ -159,8 +189,6 @@ const bindHotkeys = () => {
         if (!ev.metaKey) {
             return;
         }
-
-        scrollToElement(document.querySelector('.desktop-dt-wrapper'))
 
         switch (ev.code) {
             case 'Numpad8':
@@ -187,13 +215,50 @@ const bindHotkeys = () => {
     })
 }
 
+const bindDomObserver = () => {
+    const domMutationObserver = new MutationObserver((mutationsList) => {
+        for (const mutation of mutationsList) {
+            if (mutation.type !== 'childList' || !mutation.addedNodes.length) {
+                continue
+            }
+            mutation.addedNodes.forEach(node => {
+                if (node.nodeType !== Node.ELEMENT_NODE) {
+                    return
+                }
+                const wrapperElAdded = node.matches(getSelector('wrapper'))
+                const nestedDetailsElFound = node.querySelector(getSelector('details'))
+                const detailsElAdded = node.matches(getSelector('details'))
+                if (wrapperElAdded && nestedDetailsElFound || detailsElAdded) {
+                    if (wrapperElAdded) {
+                        scrollToElement(node);
+                    }
+                    reviewProfile()
+                }
+            })
+        }
+    })
+
+    domMutationObserver.observe(document.getElementById('root'), {
+        childList: true,
+        subtree: true,
+        attributes: false,
+        characterData: false
+    })
+}
+
 const render = () => {
     document.body.appendChild(renderLog())
 }
 
+const loadRules = async () => {
+    rules = await chrome.runtime.sendMessage({ type: 'getRules' })
+}
+
 const main = () => {
     render()
+    loadRules()
     bindHotkeys()
+    bindDomObserver()
 }
 
 main();
