@@ -128,11 +128,14 @@ const highlightText = (terms, key) => {
 }
 
 const reviewProfile = () => {
+    const wrapperEl = document.querySelector(getSelector('wrapper'))
     const contentEl = document.querySelector(getSelector('profile'))
 
     const yayMatch = rules.yay.some(yRule => contentEl.textContent.includes(yRule))
     const nayMatch = rules.nay.some(nRule => contentEl.textContent.includes(nRule))
     const mehMatch = rules.meh.some(nRule => contentEl.textContent.includes(nRule))
+
+    scrollToElement(wrapperEl)
 
     clearHighlightedText()
     termIndex = 0
@@ -229,9 +232,6 @@ const bindDomObserver = () => {
                 const nestedDetailsElFound = node.querySelector(getSelector('details'))
                 const detailsElAdded = node.matches(getSelector('details'))
                 if (wrapperElAdded && nestedDetailsElFound || detailsElAdded) {
-                    if (wrapperElAdded) {
-                        scrollToElement(node);
-                    }
                     reviewProfile()
                 }
             })
