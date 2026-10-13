@@ -1,7 +1,6 @@
 
 let rules
-let popupAnimation
-let termMatchNodes
+let termNodes
 let termIndex = 0
 
 
@@ -49,49 +48,39 @@ const scrollToWrapper = () => {
     scrollToElement(wrapperEl)
 }
 
-const fadeOut = (el, duration) => {
-    return el.animate(
-        [
-            { opacity: '1' },
-            { opacity: '0' },
-        ], {
-            fill: 'forwards',
-            delay: duration * .67,
-            duration: duration * .33,
-            iterations: 1,
-            timingFunction: 'ease-in',
-        });
-}
-
 const renderLog = () => {
-    const logEl = document.createElement('div')
-    logEl.id = 'ok-buddy-log'
-    logEl.classList.add('ok-buddy-log-text')
+    const logTextEl1 = document.createElement('div')
+    logTextEl1.classList.add('ok-buddy-log-text')
+    const logTextEl2 = document.createElement('div')
+    logTextEl2.classList.add('ok-buddy-log-text')
+    const logTextEl3 = document.createElement('div')
+    logTextEl3.classList.add('ok-buddy-log-text')
+
     const logBoxEl = document.createElement('div')
+    logBoxEl.id = 'ok-buddy-log'
     logBoxEl.classList.add('ok-buddy-log-box')
-    logBoxEl.appendChild(logEl)
+    logBoxEl.appendChild(logTextEl1)
+    logBoxEl.appendChild(logTextEl2)
+    logBoxEl.appendChild(logTextEl3)
+
     return logBoxEl;
 }
 
-const popup = (message, durationSeconds) => {
-    popupAnimation?.cancel()
-
+const logStatus = (statusTable) => {
     const logEl = document.getElementById('ok-buddy-log')
-    logEl.textContent = message
+    const logTextEls = logEl.querySelectorAll('.ok-buddy-log-text')
 
-    if (Number.isInteger(durationSeconds)) {
-        popupAnimation = fadeOut(logEl, durationSeconds * 1000)
-        popupAnimation.onfinish = () => {
-            logEl.textContent = ''
-        }
-    }
+    console.log(statusTable)
+    logTextEls.forEach((el, index) => {
+        const [ status = '', count ] = statusTable[index] ?? []
+        el.textContent = status
+        // using '||' instead of default assignment for count, cause we wanna exclude '0'
+        el.setAttribute('data-ok-buddy-counter', count || '')
+    })
 }
 
-const popdown = () => {
-    popupAnimation?.cancel()
-
-    const logEl = document.getElementById('ok-buddy-log')
-    logEl.textContent = ''
+const clearStatusLog = () => {
+    logStatus([[], [], []])
 }
 
 const clearHighlightedText = () => {
@@ -140,35 +129,34 @@ const reviewProfile = () => {
     const mehMatch = rules.meh.some(nRule => contentEl.textContent.includes(nRule))
 
     clearHighlightedText()
+
+    const yayTermNodes = yayMatch ? highlightText(rules.yay, 'yay-matches') : []
+    const nayTermNodes = nayMatch ? highlightText(rules.nay, 'nay-matches') : []
+    const mehTermNodes = mehMatch ? highlightText(rules.meh, 'meh-matches') : []
+
     termIndex = 0
-    termMatchNodes = []
+    termNodes = [
+        ...yayTermNodes,
+        ...nayTermNodes,
+        ...mehTermNodes,
+    ]
 
-    if (yayMatch) {
-        termMatchNodes.push(...highlightText(rules.yay, 'yay-matches'))
-    }
-    if (nayMatch) {
-        termMatchNodes.push(...highlightText(rules.nay, 'nay-matches'))
-    }
-    if (mehMatch) {
-        termMatchNodes.push(...highlightText(rules.meh, 'meh-matches'))
-    }
+    const statusTable = !yayMatch && !nayMatch && !mehMatch ? [/* just a placeholder hole */, ['❔']] : [
+        yayMatch ? ['✅', yayTermNodes.length] : [],
+        mehMatch ? ['⚠️', mehTermNodes.length] : [],
+        nayMatch ? ['❌', nayTermNodes.length] : [],
+    ]
 
-    const message = !yayMatch && !nayMatch && !mehMatch ? ' \n❔' : [
-        yayMatch ? '✅' : ' ',
-        mehMatch ? '🔔' : ' ',
-        nayMatch ? '❌' : ' ',
-    ].join('\n')
-
-    popup(message)
+    logStatus(statusTable)
 }
 
 const cycleMatchingTerms = () => {
-    if (!termMatchNodes || !termMatchNodes.length) {
+    if (!termNodes || !termNodes.length) {
         return
     }
-    scrollToElement(termMatchNodes[termIndex], -10)
+    scrollToElement(termNodes[termIndex], -10)
     termIndex++
-    if (termIndex >= termMatchNodes.length) {
+    if (termIndex >= termNodes.length) {
         termIndex = 0
     }
 }
@@ -176,12 +164,12 @@ const cycleMatchingTerms = () => {
 const likeProfile = () => {
     const likeButtonEl = document.querySelector(getSelector('likeButton'))
     likeButtonEl.click()
-    popdown()
+    clearStatusLog()
 }
 const passProfile = () => {
     const passButtonEl = document.querySelector(getSelector('passButton'))
     passButtonEl.click()
-    popdown()
+    clearStatusLog()
 }
 
 const messageProfile = () => {
