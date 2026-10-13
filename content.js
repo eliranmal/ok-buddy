@@ -212,9 +212,6 @@ const bindHotkeys = () => {
                 cycleMatchingTerms()
                 break;
             case 'Numpad2':
-                location.reload()
-                break;
-            case 'Numpad0':
                 messageProfile()
                 break;
             default:
