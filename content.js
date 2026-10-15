@@ -70,7 +70,6 @@ const logStatus = (statusTable) => {
     const logEl = document.getElementById('ok-buddy-log')
     const logTextEls = logEl.querySelectorAll('.ok-buddy-log-text')
 
-    console.log(statusTable)
     logTextEls.forEach((el, index) => {
         const [ status = '', count ] = statusTable[index] ?? []
         el.textContent = status
