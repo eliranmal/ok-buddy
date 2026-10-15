@@ -9,32 +9,34 @@
   <body>
     <form id="settings-form">
       <h1>settings</h1>
-      <h2>rules</h2>
       <p>enter the phrases you want to scan for, one phrase per line.</p>
-      <label class="yay">
-        yes, please:
-        <textarea
-                name="yay-rules-input"
-                draggable="false"
-                rows="5"
-        ></textarea>
-      </label>
-      <label class="meh">
-        hmm, idk:
-        <textarea
-                name="meh-rules-input"
-                draggable="false"
-                rows="5"
-        ></textarea>
-      </label>
-      <label class="nay">
-        no, thank you:
-        <textarea
-                name="nay-rules-input"
-                draggable="false"
-                rows="5"
-        ></textarea>
-      </label>
+      <fieldset>
+        <legend>rules</legend>
+        <label class="yay">
+          yes, please:
+          <textarea
+                  name="yay-rules-input"
+                  draggable="false"
+                  rows="5"
+          ></textarea>
+        </label>
+        <label class="meh">
+          hmm, idk:
+          <textarea
+                  name="meh-rules-input"
+                  draggable="false"
+                  rows="5"
+          ></textarea>
+        </label>
+        <label class="nay">
+          no, thank you:
+          <textarea
+                  name="nay-rules-input"
+                  draggable="false"
+                  rows="5"
+          ></textarea>
+        </label>
+      </fieldset>
       <button type="button" id="save-button">🖫</button>
     </form>
   </body>

@@ -14,7 +14,7 @@ chrome.action.onClicked.addListener(() => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === 'getRules') {
+  if (message.type === 'getSettings') {
     chrome.storage.local.get({
       yayRules: '',
       nayRules: '',

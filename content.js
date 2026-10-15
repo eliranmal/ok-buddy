@@ -238,13 +238,15 @@ const render = () => {
     document.body.appendChild(renderLog())
 }
 
-const loadRules = async () => {
-    rules = await chrome.runtime.sendMessage({ type: 'getRules' })
+const loadSettings = async () => {
+    const settings = await chrome.runtime.sendMessage({ type: 'getSettings' });
+    let yay, nay, meh;
+    rules = ({ yay, nay, meh } = settings);
 }
 
-const main = () => {
+const main = async () => {
+    await loadSettings()
     render()
-    loadRules()
     bindHotkeys()
     bindDomObserver()
 }

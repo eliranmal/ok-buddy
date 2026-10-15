@@ -15,14 +15,26 @@ textarea:focus {
   outline: none;
 }
 
+fieldset {
+  margin-bottom: 1rem;
+}
+
+legend {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
 label {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
   padding: 1rem;
   font-weight: bold;
   background-color: lightgray;
+}
+
+label:not(:last-of-type) {
+  padding-bottom: 0;
 }
 
 label.yay {

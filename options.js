@@ -8,7 +8,7 @@ const NAY_RULES_TEXTAREA_NAME = 'nay-rules-input';
 const MEH_RULES_TEXTAREA_NAME = 'meh-rules-input';
 
 async function updateUi() {
-  // Access settings from storage with default values.
+  // access settings from storage with default values.
   const { yayRules, nayRules, mehRules } = await chrome.storage.local.get({
     yayRules: '',
     nayRules: '',
