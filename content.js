@@ -40,8 +40,12 @@ const keyMap = {
         scrollToWrapper()
         passProfile()
     },
-    'Numpad5': cycleMatchingTerms,
-    'Numpad2': messageProfile,
+    'Numpad5': () => {
+        cycleMatchingTerms()
+    },
+    'Numpad2': () => {
+        messageProfile()
+    },
 }
 
 
