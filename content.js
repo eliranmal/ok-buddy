@@ -204,16 +204,20 @@ const cycleMatchingTerms = () => {
 
 const likeProfile = () => {
     const likeButtonEl = document.querySelector(getSelector('likeButton'))
-    likeButtonEl.click()
-    clearStatusLog()
-    console.log('user liked')
+    if (likeButtonEl) {
+        clearStatusLog();
+        likeButtonEl.click()
+        console.log('user liked')
+    }
 }
 
 const passProfile = () => {
     const passButtonEl = document.querySelector(getSelector('passButton'))
-    passButtonEl.click()
-    clearStatusLog()
-    console.log('user passed')
+    if (passButtonEl) {
+        clearStatusLog()
+        passButtonEl.click()
+        console.log('user passed')
+    }
 }
 
 const blockProfile = () => {
@@ -225,10 +229,11 @@ const blockProfile = () => {
         blockButtonEl?.click()
         setTimeout(() => {
             const closeButtonEl = document.querySelector(getSelector('blockConfirmationModalCloseButton'))
-            console.log(closeButtonEl)
-            closeButtonEl?.click()
-            clearStatusLog()
-            console.log('user blocked')
+            if (closeButtonEl) {
+                clearStatusLog()
+                closeButtonEl.click()
+                console.log('user blocked')
+            }
         }, 1000)
     }, 100)
 }
