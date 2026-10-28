@@ -230,7 +230,6 @@ const blockProfile = () => {
         setTimeout(() => {
             const closeButtonEl = document.querySelector(getSelector('blockConfirmationModalCloseButton'))
             if (closeButtonEl) {
-                clearStatusLog()
                 closeButtonEl.click()
                 console.log('user blocked')
             }
