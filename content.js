@@ -205,7 +205,7 @@ const cycleMatchingTerms = () => {
 const likeProfile = () => {
     const likeButtonEl = document.querySelector(getSelector('likeButton'))
     if (likeButtonEl) {
-        clearStatusLog();
+        clearStatusLog()
         likeButtonEl.click()
         console.log('user liked')
     }
