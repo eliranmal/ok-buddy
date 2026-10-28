@@ -4,29 +4,6 @@ let termNodes
 let termIndex = 0
 
 
-const defaultPageSelectors = {
-    wrapper: '.desktop-dt-wrapper',
-    profile: '.desktop-dt-content',
-    details: '.dt-section',
-    likeButton: '.dt-action-buttons-button.like',
-    passButton: '.dt-action-buttons-button.pass',
-}
-
-const profilePageSelectors = {
-    wrapper: '#profile',
-    profile: '#profile',
-    details: '.quickmatch-profiledetails.matchprofile-details',
-    likeButton: '#like-button',
-    passButton: '#pass-button',
-    messageButton: '.profile-pill-buttons-button.message-pill-button',
-}
-
-const selectorsByPage = {
-    'home': defaultPageSelectors,
-    'discover': defaultPageSelectors,
-    'profile': profilePageSelectors,
-}
-
 const keyMap = {
     'Numpad8': () => {
         scrollToWrapper()
@@ -44,8 +21,36 @@ const keyMap = {
         cycleMatchingTerms()
     },
     'Numpad2': () => {
-        messageProfile()
+        blockProfile()
     },
+}
+
+const defaultPageSelectors = {
+    wrapper: '.desktop-dt-wrapper',
+    profile: '.desktop-dt-content',
+    details: '.dt-section',
+    likeButton: '.dt-action-buttons-button.like',
+    passButton: '.dt-action-buttons-button.pass',
+    menuTriggerButton: '.overflow-button',
+    modal: '#BaseModal',
+    blockConfirmationModalCloseButton: '[aria-label="Close block confirmation modal"]',
+}
+
+const profilePageSelectors = {
+    wrapper: '#profile',
+    profile: '#profile',
+    details: '.quickmatch-profiledetails.matchprofile-details',
+    likeButton: '#like-button',
+    passButton: '#pass-button',
+    menuTriggerButton: '.profile-userdropdown-toggler',
+    modal: '#BaseModal',
+    blockConfirmationModalCloseButton: '[aria-label="Close block confirmation modal"]',
+}
+
+const selectorsByPage = {
+    'home': defaultPageSelectors,
+    'discover': defaultPageSelectors,
+    'profile': profilePageSelectors,
 }
 
 
@@ -112,20 +117,35 @@ const clearHighlightedText = () => {
     CSS.highlights.clear()
 }
 
+const findTextNodes = (itemMatchPredicate) => {
+    const domWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, node => (
+        itemMatchPredicate(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP
+    ))
+
+    const textNodes = []
+    while (domWalker.nextNode()) {
+        textNodes.push(domWalker.currentNode)
+    }
+    return textNodes
+}
+
+const getElementByText = (text, scopeEl) => {
+    const textNodes = findTextNodes((node) => {
+        const withinScope = scopeEl && scopeEl.contains(node)
+        return node.data === text && withinScope
+    })
+    return textNodes.length ? textNodes[0].parentElement : null
+}
+
 const highlightText = (terms, key) => {
     if (!CSS.highlights) {
         console.log('css highlights not supported!')
         return
     }
 
-    const domWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, node => (
-        terms.some(t => node.data.includes(t)) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP
+    const termsTextNodes = findTextNodes((node) => (
+        terms.some(t => node.data.includes(t))
     ))
-
-    const termsTextNodes = []
-    while (domWalker.nextNode()) {
-        termsTextNodes.push(domWalker.currentNode)
-    }
 
     const ranges = termsTextNodes.map(node => {
         const range = document.createRange()
@@ -185,16 +205,31 @@ const likeProfile = () => {
     const likeButtonEl = document.querySelector(getSelector('likeButton'))
     likeButtonEl.click()
     clearStatusLog()
+    console.log('user liked')
 }
+
 const passProfile = () => {
     const passButtonEl = document.querySelector(getSelector('passButton'))
     passButtonEl.click()
     clearStatusLog()
+    console.log('user passed')
 }
 
-const messageProfile = () => {
-    const messageButtonEl = document.querySelector(getSelector('messageButton'))
-    messageButtonEl?.click()
+const blockProfile = () => {
+    const menuTriggerButtonEl = document.querySelector(getSelector('menuTriggerButton'))
+    menuTriggerButtonEl?.click()
+    setTimeout(() => {
+        const modalEl = document.querySelector(getSelector('modal'))
+        const blockButtonEl = getElementByText('BLOCK', modalEl)
+        blockButtonEl?.click()
+        setTimeout(() => {
+            const closeButtonEl = document.querySelector(getSelector('blockConfirmationModalCloseButton'))
+            console.log(closeButtonEl)
+            closeButtonEl?.click()
+            clearStatusLog()
+            console.log('user blocked')
+        }, 1000)
+    }, 100)
 }
 
 const bindHotkeys = () => {

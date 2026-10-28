@@ -14,8 +14,8 @@ a browser extension to streamline the user-experience on okcupid.
     <dd>clicks 'pass' on the current user profile, and then performs a review on the next one.</dd>
     <dt>scan (<kbd>META + numpad 5</kbd>)</dt>
     <dd>scrolls the page to find matches of highlighted terms, resulted from a 'pass' or 'like' on a user profile.</dd>
-    <dt>message (<kbd>META + numpad 2</kbd>)</dt>
-    <dd>clicks 'message' on the current user profile (only available in profile pages, not in 'discovery' page).</dd>
+    <dt>block (<kbd>META + numpad 2</kbd>)</dt>
+    <dd>opens the dotted menu on the current user profile, and clicks 'block'.</dd>
     <dt>review (<kbd>META + numpad 8</kbd>)</dt>
     <dd>reviews the current user profile according to set rules, highlights rule matches on the page, and shows a badge with the verdict as emojis.  this action happens automatically upon profile page load.</dd>
 </dl>
