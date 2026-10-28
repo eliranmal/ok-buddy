@@ -27,6 +27,23 @@ const selectorsByPage = {
     'profile': profilePageSelectors,
 }
 
+const keyMap = {
+    'Numpad8': () => {
+        scrollToWrapper()
+        reviewProfile()
+    },
+    'Numpad6': () => {
+        scrollToWrapper()
+        likeProfile()
+    },
+    'Numpad4': () => {
+        scrollToWrapper()
+        passProfile()
+    },
+    'Numpad5': cycleMatchingTerms,
+    'Numpad2': messageProfile,
+}
+
 
 const getSelector = (key) => {
     const pageBasename = location.pathname.split('/').filter(Boolean).shift()
@@ -181,29 +198,7 @@ const bindHotkeys = () => {
         if (!ev.metaKey) {
             return;
         }
-
-        switch (ev.code) {
-            case 'Numpad8':
-                scrollToWrapper()
-                reviewProfile()
-                break;
-            case 'Numpad6':
-                scrollToWrapper()
-                likeProfile()
-                break;
-            case 'Numpad4':
-                scrollToWrapper()
-                passProfile()
-                break;
-            case 'Numpad5':
-                cycleMatchingTerms()
-                break;
-            case 'Numpad2':
-                messageProfile()
-                break;
-            default:
-                break;
-        }
+        keyMap[ev.code]?.()
     })
 }
 
