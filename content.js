@@ -21,6 +21,7 @@ const keyMap = {
         cycleMatchingTerms()
     },
     'Numpad2': () => {
+        scrollToWrapper()
         blockProfile()
     },
 }
